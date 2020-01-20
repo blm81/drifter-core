@@ -7,7 +7,7 @@ set(CINDER_ROOT ${EXTERNAL_DEPS}/Cinder) #CMake build still doesn't work in 9.1 
                                          #neccesary configuration files
 set(CINDER_LIB_DIR ${CINDER_ROOT}/lib/)
 
-include( "${CINDER_ROOT}/proj/cmake/modules/cinderMakeApp.cmake" )
+include("${CINDER_ROOT}/proj/cmake/modules/cinderMakeApp.cmake")
 
 #TODO build a library as target for use in specific projects
 #instead of executable as ci_make_app does
@@ -17,6 +17,8 @@ ci_make_app(
         SOURCES     src/dftrMsgHandler.cpp
                     src/dftrVideo.cpp
                     src/dftrAudio.cpp
+                    src/generative/dftrFauna.cpp
+                    src/generative/dftrHabitat.cpp
                     ${EXTERNAL_DEPS}/Cinder-Asio/src/TcpClient.cpp
                     ${EXTERNAL_DEPS}/Cinder-Asio/src/TcpSession.cpp
                     ${EXTERNAL_DEPS}/Cinder-Asio/src/ClientInterface.cpp

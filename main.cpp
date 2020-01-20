@@ -1,6 +1,9 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "dftrTcpClient.h"
+#include "generative/dftrHabitat.h"
+#include <memory>
 
 class Drifter : public ci::app::App
 {
@@ -9,16 +12,15 @@ public:
     void mouseDown( ci::app::MouseEvent event ) override;
     void update() override;
     void draw() override;
+
+    void ConnectTCPSocket(); //just for testing at this time
 private:
     drifter::network::TCPClient         _tcpClient;
+    std::unique_ptr<drifter::generative::Habitat>        _habitat;
 };
 
-void Drifter::setup()
+void Drifter::ConnectTCPSocket()
 {
-    using namespace ci;
-    using namespace ci::app;
-
-    //connect message parser to message handler
     std::function<void( const Json::Value & )> msgCB = [&]( const Json::Value & jsonVal ) {
         std::cout << "got msg: " << jsonVal << std::endl;
     };
@@ -27,24 +29,37 @@ void Drifter::setup()
         std::cout << "got message in main class: " << jsonVal.toStyledString() << std::endl;
     });
     msgHandlerRef->SetSendFunc( [&]( Json::Value & jsonVal ) {
-       _tcpClient.Send( jsonVal );
+        _tcpClient.Send( jsonVal );
     });
     _tcpClient.SetMsgHandler( msgHandlerRef );
-    std::cout << "connecting..." << std::endl;
+    std::cout << "connecting to port 8888..." << std::endl;
     _tcpClient.Connect( "localhost", (uint16_t)8888 );
+}
+
+void Drifter::setup()
+{
+    using namespace ci;
+    using namespace ci::app;
+    using namespace drifter::generative;
+
+    _habitat = std::make_unique<Habitat>( 800, 800 );
+    _habitat->Initialize();
 }
 
 void Drifter::mouseDown( ci::app::MouseEvent event )
 {}
 
 void Drifter::update()
-{
-    _tcpClient.Update();
-}
+{}
 
 void Drifter::draw()
 {
     using namespace ci;
+    using namespace ci::gl;
+    using namespace drifter::generative;
+
+    clear();
+    _habitat->Draw();
 }
 
 CINDER_APP( Drifter, ci::app::RendererGl(), [&]( ci::app::App::Settings * settings ) {
