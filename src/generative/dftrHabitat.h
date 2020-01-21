@@ -7,8 +7,11 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <map>
 #include <memory>
+#include <utility>
+#include "generative/dftrHabitatTile.h"
 
 namespace drifter
 {
@@ -22,11 +25,15 @@ namespace generative
         int _width;
         int _height;
         std::map<std::string, std::shared_ptr<drifter::generative::Fauna>> _faunaRefMap;
+        std::vector<std::vector<std::shared_ptr<drifter::generative::HabitatTile>>> _faunaLocs;
+
+        int16_t AddAtPosition( const float posX, const float posY, const std::string & id );
 
     public:
-        Habitat( int width, int height ) : _width( width ), _height( height ){}
+        Habitat( const int width, const int height );
 
         void Initialize();
+        void Initialize( const std::vector<std::pair<float, float>> & positions );
         void Draw();
     };
 } //generative

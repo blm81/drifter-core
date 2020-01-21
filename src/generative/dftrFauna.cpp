@@ -15,14 +15,13 @@ namespace drifter
 {
 namespace generative
 {
-    Fauna::Fauna( const ci::vec2 & position ) : _currentAge( 0.0f ), _position( position )
+    Fauna::Fauna( const ci::vec2 & position, float radius )
+            : _currentAge( 0.0f ), _position( position ), _radius( radius )
     {
         boost::uuids::uuid bId;
         _id = boost::uuids::to_string( bId );
-        std::cout << "fauna with id: " << _id << " has been initialized" << std::endl;
-        //TODO the below ranges should not be hardcoded
-        _radius = ci::randFloat( 2.0f, 5.0f );
-        _reach = ci::randFloat( 2.0f, 5.0f );
+        std::cout << "fauna with id: " << _id << " has been initialized at " << _position.x << ": " << _position.y << std::endl;
+        _reach = _radius;
         _maxAge = ci::randFloat( 60.0f, 500.0f );
         _color = ci::Colorf( ci::randFloat( 0.0f, 1.0f ),
                 ci::randFloat( 0.0f, 1.0f ),

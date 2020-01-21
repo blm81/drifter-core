@@ -19,6 +19,7 @@ ci_make_app(
                     src/dftrAudio.cpp
                     src/generative/dftrFauna.cpp
                     src/generative/dftrHabitat.cpp
+                    src/generative/dftrHabitatTile.cpp
                     ${EXTERNAL_DEPS}/Cinder-Asio/src/TcpClient.cpp
                     ${EXTERNAL_DEPS}/Cinder-Asio/src/TcpSession.cpp
                     ${EXTERNAL_DEPS}/Cinder-Asio/src/ClientInterface.cpp

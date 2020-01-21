@@ -24,9 +24,10 @@ namespace generative
         float _maxAge;
         float _currentAge;
     public:
-        Fauna( const ci::vec2 & position );
+        Fauna( const ci::vec2 & position, float radius = 5 );
         void Draw() const;
         std::string Id() { return _id; }
+        ci::vec2 Position() { return _position; }
     };
 }
 }
