@@ -36,8 +36,8 @@ namespace generative
     }
 
     /**
-     * initialize
-     * @param positions
+     * initialize a habitat at set positions
+     * @param positions: where to create the desired Fauna
      */
     void Habitat::Initialize( const std::vector<std::pair<float, float>> & positions )
     {
@@ -68,10 +68,10 @@ namespace generative
             std::cout << "WARNING: agent at " << posX << ": " << posX << " cannot be added" << std::endl;
             return -1;
         }
-        if ( _faunaLocs[posX][posY] == nullptr ) {
-            _faunaLocs[posX][posY] = std::make_shared<HabitatTile>();
+        if ( _faunaLocs[posY][posX] == nullptr ) {
+            _faunaLocs[posY][posX] = std::make_shared<HabitatTile>();
         }
-        _faunaLocs[posX][posY]->SetResident( id );
+        _faunaLocs[posY][posX]->SetResident( id );
         return 0;
     }
 } //generative

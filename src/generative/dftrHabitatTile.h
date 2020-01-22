@@ -20,6 +20,7 @@ namespace generative
     public:
         HabitatTile();
 
+        std::string Resident() { return _resident; }
         void SetResident( std::string resident );
         bool IsEmpty() const;
     };
