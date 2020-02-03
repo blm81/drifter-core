@@ -13,6 +13,10 @@ here's a list of a few things built with this code:
 * [Cinder-Asio](https://github.com/BanTheRewind/Cinder-Asio)
 * CMake ^3.15.4
 
+##### tests #####
+
+for now, unit tests are run from the project built from the ``test`` directory.  eventually, the plan is to move to a more robust unit test framework.  for now, we are limited by the use of the ``ci_make_app`` macro to building the tests as a Cinder app.
+
 ##### TODOs and known issues #####
 
 * uses Cinder's ci_make_app CMake function which is limited to building executables.  ideally, we would build a library here and projects linking against it would live in a separate repository
