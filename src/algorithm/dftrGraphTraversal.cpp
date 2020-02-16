@@ -65,7 +65,7 @@ namespace algorithm
      * this returns neighbors by layer up to a specified depth
      * @tparam T: object type at each point in grid
      * @param inputGrid: 2D grid of objects of type T
-     * @param referencePoint: 2d point to get neighbors for
+     * @param referencePoint: 2d point to get neighbors for **TODO make this a tuple or in some way support 3D**
      * @param maxDepth: maximum search layer depth
      * @param conditionalFunc: call this to determine if a point is a neighbor
      * @param stopIfFound: stop search after finding at least one neighbor in a layer
@@ -101,6 +101,7 @@ namespace algorithm
          * exit once all layers are searched unless specified to exit after at least one neighbor is found
          * start of with the neighbors of the reference point
          */
+        searched.insert( referencePoint );
         EnqueueAdjacent( referencePoint, searched, toSearch, gridHeight, gridWidth );
         for ( size_t layer = 0; layer < maxDepth; ++layer ) {
             bool neighborInLayer = false;
