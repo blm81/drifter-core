@@ -6,8 +6,10 @@ set(DFTR_SRC_DIR ../src)
 set(CINDER_ROOT ${EXTERNAL_DEPS}/Cinder) #CMake build still doesn't work in 9.1 release, building Cinder with CMake generates
 #neccesary configuration files
 set(CINDER_LIB_DIR ${CINDER_ROOT}/lib/)
-set(TEST_INCLUDES ${DFTR_SRC_DIR}/algorithm/tests/dftrGraphTraversalTests.h)
-set(TEST_SRCS ${DFTR_SRC_DIR}/algorithm/tests/dftrGraphTraversalTests.cpp)
+set(TEST_INCLUDES ${DFTR_SRC_DIR}/algorithm/tests/dftrGraphTraversalTests.h
+        ${DFTR_SRC_DIR}/generative/tests/dftrHabitatTests.h)
+set(TEST_SRCS ${DFTR_SRC_DIR}/algorithm/tests/dftrGraphTraversalTests.cpp
+        ${DFTR_SRC_DIR}/generative/tests/dftrHabitatTests.cpp)
 
 include("../dependency_config.cmake")
 include("${CINDER_ROOT}/proj/cmake/modules/cinderMakeApp.cmake")

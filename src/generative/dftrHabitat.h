@@ -34,10 +34,12 @@ namespace generative
 
         void Initialize();
         void Initialize( const std::vector<std::pair<float, float>> & positions );
-        void Draw();
+        void AdvanceHunt();
+        void Update();
+        void Draw() const;
 
         //TEMP ACCESSORS
-        std::map<std::string, std::shared_ptr<drifter::generative::Fauna>> FaunaRefMap() { return _faunaRefMap; };
+        std::map<std::string, std::shared_ptr<drifter::generative::Fauna>> & FaunaRefMap() { return _faunaRefMap; };
         std::vector<std::vector<std::shared_ptr<drifter::generative::HabitatTile>>> FaunaLocs() { return _faunaLocs; }
     };
 } //generative

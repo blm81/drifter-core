@@ -15,19 +15,33 @@ namespace generative
 {
     class Fauna
     {
+    private:
+        void SetView();
+
     protected:
         std::string _id;
         ci::vec2 _position;
         ci::Colorf _color;
         float _radius;
         float _reach;
+        float _view;
         float _maxAge;
         float _currentAge;
+
+        int16_t BlendColors( ci::Colorf & dstColor, const ci::Colorf & srcColor, const float srcWeight );
+
     public:
         Fauna( const ci::vec2 & position, float radius = 5 );
         void Draw() const;
-        std::string Id() { return _id; }
-        ci::vec2 Position() { return _position; }
+        int16_t Eat( std::shared_ptr<Fauna> other );
+        std::string Id() const { return _id; }
+        ci::vec2 Position() const { return _position; }
+        void SetPosition( const ci::vec2 & position ) { _position = position; }
+        ci::Colorf Color() const { return _color; };
+        float Reach() const { return _reach; }
+        float Radius() const { return _radius; }
+        void SetRadius( const float radius );
+        float View() const { return _view; }
     };
 }
 }

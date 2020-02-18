@@ -9,6 +9,7 @@ class Drifter : public ci::app::App
 public:
     void setup() override;
     void mouseDown( ci::app::MouseEvent event ) override;
+    void keyDown( ci::app::KeyEvent event ) override;
     void update() override;
     void draw() override;
 
@@ -39,10 +40,24 @@ void Drifter::setup()
 {
     using namespace ci;
     using namespace ci::app;
+    using namespace drifter::generative;
+
+    _habitat = std::make_unique<Habitat>( 300, 300 );
+    _habitat->Initialize();
 }
 
 void Drifter::mouseDown( ci::app::MouseEvent event )
 {}
+
+void Drifter::keyDown( ci::app::KeyEvent event )
+{
+    char eventChar = event.getChar();
+    switch ( eventChar ) {
+        case 'u':
+            _habitat->Update();
+            break;
+    }
+}
 
 void Drifter::update()
 {}
@@ -54,8 +69,9 @@ void Drifter::draw()
     using namespace drifter::generative;
 
     clear();
+    _habitat->Draw();
 }
 
 CINDER_APP( Drifter, ci::app::RendererGl(), [&]( ci::app::App::Settings * settings ) {
-    settings->setWindowSize( 800, 800 );
+    settings->setWindowSize( 300, 300 );
 })
