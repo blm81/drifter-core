@@ -6,7 +6,7 @@
 
 #include "dftrGraphTraversalTests.h"
 #include "generative/dftrFauna.h"
-#include "generative/dftrHabitat.h"
+#include "generative/tests/dftrHabitatTester.h"
 #include "algorithm/dftrGraphTraversal.h"
 
 namespace drifter
@@ -18,7 +18,7 @@ namespace tests
         using namespace generative;
         using namespace algorithm;
 
-        std::unique_ptr<Habitat> habitat = std::make_unique<Habitat>(7, 7);
+        std::unique_ptr<HabitatTester> habitat = std::make_unique<HabitatTester>(7, 7);
         std::vector<std::pair<float, float>> positions = {
                 {2, 4},
                 {1, 3},
@@ -26,17 +26,17 @@ namespace tests
                 {5, 6}
         };
         habitat->Initialize(positions);
-        std::vector<std::vector<std::shared_ptr<HabitatTile>>> neighbors = GetNeighborsByLayer<std::shared_ptr<HabitatTile>>(habitat->FaunaLocs(), {3, 3}, 3,
+        std::vector<std::vector<std::shared_ptr<HabitatTile>>> neighbors = GetNeighborsByLayer<std::shared_ptr<HabitatTile>>(habitat->_faunaLocs, {3, 3}, 3,
         [](std::shared_ptr<HabitatTile> tile) -> bool {
             if (tile == nullptr) {
                 return false;
             }
             return !tile->IsEmpty();
         });
-        ci::vec2 outPos1 = habitat->FaunaRefMap().find(neighbors[0][0]->Resident())->second->Position();
-        ci::vec2 outPos2 = habitat->FaunaRefMap().find(neighbors[1][0]->Resident())->second->Position();
-        ci::vec2 outPos3 = habitat->FaunaRefMap().find(neighbors[2][0]->Resident())->second->Position();
-        ci::vec2 outPos4 = habitat->FaunaRefMap().find(neighbors[2][1]->Resident())->second->Position();
+        ci::vec2 outPos1 = habitat->_faunaRefMap.find(neighbors[0][0]->Resident())->second->Position();
+        ci::vec2 outPos2 = habitat->_faunaRefMap.find(neighbors[1][0]->Resident())->second->Position();
+        ci::vec2 outPos3 = habitat->_faunaRefMap.find(neighbors[2][0]->Resident())->second->Position();
+        ci::vec2 outPos4 = habitat->_faunaRefMap.find(neighbors[2][1]->Resident())->second->Position();
         if (outPos1.x != positions[0].first || outPos1.y != positions[0].second) return false;
         if (outPos2.x != positions[1].first || outPos2.y != positions[1].second) return false;
         if (outPos3.x != positions[2].first || outPos3.y != positions[2].second) return false;
