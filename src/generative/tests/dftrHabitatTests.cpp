@@ -10,19 +10,43 @@
 
 namespace drifter
 {
+using namespace generative;
 namespace tests
 {
+    bool PopulateTest()
+    {
+        std::unique_ptr<HabitatTester> habitat = std::make_unique<HabitatTester>( 2, 2 );
+        habitat->Populate(); //TODO: set population size here so we can be reasonably sure we produce a duplicate position
+        if ( habitat->_faunaRefMap.size() > 4 ) {
+            std::cout << "Habitat::Populate test failed with random population" << std::endl;
+            return false;
+        }
+        habitat.release();
+        habitat = nullptr;
+        habitat = std::make_unique<HabitatTester>( 2, 2 );
+        std::vector<std::pair<float, float>> positions = {
+                {0, 0},
+                {1, 1},
+                {1, 1}
+        };
+        habitat->Populate( positions );
+        if ( habitat->_faunaRefMap.size() > 2 ) {
+            std::cout << "Habitat::Populate test failed with set population" << std::endl;
+            return false;
+        }
+        std::cout << "All Populate tests passed!" << std::endl;
+        return true;
+    }
+
     bool AdvanceHuntTest()
     {
-        using namespace generative;
-
-        std::unique_ptr<HabitatTester> habitat = std::make_unique<HabitatTester>(100, 100);
+        std::unique_ptr<HabitatTester> habitat = std::make_unique<HabitatTester>( 100, 100 );
         std::vector<std::pair<float, float>> positions = {
                 {50, 50},
                 {20, 20},
                 {75, 75}
         };
-        habitat->Initialize(positions);
+        habitat->Populate( positions );
         std::string biggestFauna = habitat->_faunaLocs[50][50]->Resident();
         std::string middleFauna = habitat->_faunaLocs[20][20]->Resident();
         std::string smallestFauna = habitat->_faunaLocs[75][75]->Resident();

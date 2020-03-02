@@ -25,7 +25,7 @@ namespace tests
                 {0, 2},
                 {5, 6}
         };
-        habitat->Initialize(positions);
+        habitat->Populate(positions);
         std::vector<std::vector<std::shared_ptr<HabitatTile>>> neighbors = GetNeighborsByLayer<std::shared_ptr<HabitatTile>>(habitat->_faunaLocs, {3, 3}, 3,
         [](std::shared_ptr<HabitatTile> tile) -> bool {
             if (tile == nullptr) {

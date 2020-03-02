@@ -24,16 +24,18 @@ namespace generative
     protected:
         int _width;
         int _height;
+        int _popSize;
+        int _popVariance;
         std::map<std::string, std::shared_ptr<drifter::generative::Fauna>> _faunaRefMap;
         std::vector<std::vector<std::shared_ptr<drifter::generative::HabitatTile>>> _faunaLocs;
 
-        int16_t AddAtPosition( const float posX, const float posY, const std::string & id );
+        int16_t TryAddFauna( std::shared_ptr<drifter::generative::Fauna> fauna );
 
     public:
         Habitat( const int width, const int height );
 
-        void Initialize();
-        void Initialize( const std::vector<std::pair<float, float>> & positions );
+        void Populate();
+        void Populate( const std::vector<std::pair<float, float>> & positions );
         void AdvanceHunt();
         void Update();
         void Draw() const;

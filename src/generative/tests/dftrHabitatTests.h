@@ -10,6 +10,7 @@ namespace drifter
 {
 namespace tests
 {
+    bool PopulateTest();
     bool AdvanceHuntTest();
 } //tests
 } //drifter

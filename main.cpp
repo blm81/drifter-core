@@ -43,7 +43,7 @@ void Drifter::setup()
     using namespace drifter::generative;
 
     _habitat = std::make_unique<Habitat>( 300, 300 );
-    _habitat->Initialize();
+    _habitat->Populate();
 }
 
 void Drifter::mouseDown( ci::app::MouseEvent event )
@@ -53,6 +53,9 @@ void Drifter::keyDown( ci::app::KeyEvent event )
 {
     char eventChar = event.getChar();
     switch ( eventChar ) {
+        case 'p':
+            _habitat->Populate();
+            break;
         case 'u':
             _habitat->Update();
             break;

@@ -16,6 +16,7 @@ namespace generative
 {
     class HabitatTester : public Habitat
     {
+        friend bool tests::PopulateTest();
         friend bool tests::AdvanceHuntTest();
         friend bool tests::GetNeighborsByLayerTest();
 

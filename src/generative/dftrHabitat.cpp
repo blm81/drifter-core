@@ -19,37 +19,46 @@ namespace generative
     Habitat::Habitat( const int width, const int height ) : _width( width ), _height( height )
     {
         _faunaLocs.resize( height );
+        _popSize = 15;
+        _popVariance = 10;
         for ( std::vector<std::shared_ptr<drifter::generative::HabitatTile>> & currVector : _faunaLocs ) {
             currVector.resize( width, nullptr );
         }
     }
 
     /**
-     * initialize a randomly distributed habitat with a random number of fauna
-     * TODO: replace the hardcoded numbers here, maybe pass a function here containing initialization logic?
+     * populate a randomly distributed habitat with a random number of fauna
+     * TODO: replace the hardcoded numbers here
      */
-    void Habitat::Initialize()
+    void Habitat::Populate()
     {
-        for ( size_t i = 0; i < ci::randInt( 10, 20 ); ++i ) { //TODO magic numbers
-            std::shared_ptr<Fauna> fauna = std::make_shared<Fauna>( ci::vec2( ci::randFloat( 0, _width - 10 ),
-                                                                              ci::randFloat( 0, _height - 10 )),
-                                                                              ci::randFloat( 5.0f, 10.0f ));
-            _faunaRefMap.insert({ fauna->Id(), fauna });
-            ci::vec2 currPos = fauna->Position();
-            AddAtPosition( currPos.x, currPos.y, fauna->Id() );
+        int halfVariance = _popVariance / 2;
+        int currPop = ci::randInt( _popSize - halfVariance, _popSize + halfVariance );
+        for ( size_t i = 0; i < currPop; ++i ) {
+            bool addingSuccess = false;
+            int tries = 0;
+            int maxTries = 5;
+            while ( !addingSuccess && tries < maxTries ) {
+                ci::vec2 proposedPos = ci::vec2(ci::randFloat( 0, _width - 10 ),
+                                                ci::randFloat( 0, _height - 10 ));
+                std::shared_ptr<Fauna> fauna = std::make_shared<Fauna>( proposedPos, ci::randFloat( 5.0f, 10.0f ));
+                if ( TryAddFauna( fauna ) >= 0 ) {
+                    addingSuccess = true;
+                }
+                ++tries;
+            }
         }
     }
 
     /**
-     * initialize a habitat at set positions
+     * populate a habitat at set positions
      * @param positions: where to create the desired Fauna
      */
-    void Habitat::Initialize( const std::vector<std::pair<float, float>> & positions )
+    void Habitat::Populate( const std::vector<std::pair<float, float>> & positions )
     {
         for ( const std::pair<float, float> & currPos : positions ) {
             std::shared_ptr<Fauna> fauna = std::make_shared<Fauna>( ci::vec2( currPos.first, currPos.second ));
-            _faunaRefMap.insert({ fauna->Id(), fauna });
-            AddAtPosition( currPos.first, currPos.second, fauna->Id() );
+            TryAddFauna( fauna );
         }
     }
 
@@ -136,14 +145,16 @@ namespace generative
     }
 
     /**
-     * add fauna location to the habitat grid
-     * @param posX: position on X axis
-     * @param posY: position on Y axis
-     * @param id: id of Fauna to add
+     * add fauna location to the habitat grid and shared pointer to the ref map
+     * return error code if this can't be done
+     * @param fauna: shared pointer to Fauna to add
      * @return -1: position is out of bounds, -2: position is already occupied
      */
-    int16_t Habitat::AddAtPosition( const float posX, const float posY, const std::string & id )
+    int16_t Habitat::TryAddFauna( std::shared_ptr<drifter::generative::Fauna> fauna )
     {
+        int posX = fauna->Position().x;
+        int posY = fauna->Position().y;
+        std::string id = fauna->Id();
         if ( posX < 0 || posY < 0 || posX >= _width || posY >= _height ) {
             std::cout << "WARNING: agent at " << posX << ": " << posX << " cannot be added" << std::endl;
             return -1;
@@ -156,6 +167,7 @@ namespace generative
             return -2;
         }
         _faunaLocs[posY][posX]->SetResident( id );
+        _faunaRefMap.insert({ fauna->Id(), fauna });
         return 0;
     }
 } //generative

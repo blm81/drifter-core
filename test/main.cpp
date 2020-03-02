@@ -35,6 +35,9 @@ void DrifterTests::update()
     if ( !GetNeighborsByLayerTest() ) {
         std::cout << "GetNeighborsByLayer failed" << std::endl;
     }
+    if ( !PopulateTest() ) {
+        std::cout << "Populate failed" << std::endl;
+    }
     if ( !AdvanceHuntTest() ) {
         std::cout << "AdvanceHunt failed" << std::endl;
     }
