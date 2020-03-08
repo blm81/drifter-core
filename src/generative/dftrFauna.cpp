@@ -18,7 +18,9 @@ namespace generative
     Fauna::Fauna( const ci::vec2 & position, float radius )
             : _currentAge( 0.0f ), _position( position )
     {
-        boost::uuids::uuid bId;
+        static boost::mt19937 mtGen;
+        boost::uuids::basic_random_generator<boost::mt19937> randomGen( &mtGen );
+        boost::uuids::uuid bId = randomGen();
         _id = boost::uuids::to_string( bId );
         std::cout << "fauna with id: " << _id << " has been initialized at " << _position.x << ": " << _position.y << std::endl;
         SetRadius( radius );
