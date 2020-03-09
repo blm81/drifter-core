@@ -5,6 +5,7 @@
  */
 
 #include "dftrHabitatTests.h"
+#include "dftrFaunaTester.h"
 #include "generative/dftrFauna.h"
 #include "generative/tests/dftrHabitatTester.h"
 
@@ -51,13 +52,21 @@ namespace tests
         std::string middleFauna = habitat->_faunaLocs[20][20]->Resident();
         std::string smallestFauna = habitat->_faunaLocs[75][75]->Resident();
         auto it = habitat->_faunaRefMap.find( biggestFauna );
-        it->second->SetRadius( 21 );
-        it = habitat->_faunaRefMap.find( middleFauna );
+        std::vector<std::shared_ptr<Fauna>> faunaVec;
         it->second->SetRadius( 14 );
-        it = habitat->_faunaRefMap.find( smallestFauna );
+        faunaVec.push_back( it->second );
+        it = habitat->_faunaRefMap.find( middleFauna );
         it->second->SetRadius( 7 );
+        faunaVec.push_back( it->second );
+        it = habitat->_faunaRefMap.find( smallestFauna );
+        it->second->SetRadius( 2 );
+        faunaVec.push_back( it->second );
+        for ( std::shared_ptr<Fauna> currFauna : faunaVec ) {
+            std::shared_ptr<FaunaTester> currFaunaTester = std::static_pointer_cast<FaunaTester>( currFauna );
+            currFaunaTester->_maxAge = 100; //set to something arbitrarily large which exceeds the duration of the test
+        }
 
-        for ( size_t i = 0; i < 10; ++i ) {
+        for ( size_t i = 0; i < 5; ++i ) {
             habitat->AdvanceHunt();
         }
         auto st = habitat->_faunaRefMap.find( smallestFauna );
@@ -69,7 +78,7 @@ namespace tests
             return false;
         }
 
-        for ( size_t i = 0; i < 8; ++i ) {
+        for ( size_t i = 0; i < 10; ++i ) {
             habitat->AdvanceHunt();
         }
         st = habitat->_faunaRefMap.find( smallestFauna );

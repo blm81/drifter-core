@@ -8,7 +8,6 @@
 #include "generative/dftrFauna.h"
 #include "algorithm/dftrGraphTraversal.h"
 #include "cinder/rand.h"
-#include <utility>
 #include <math.h>
 #include <tuple>
 
@@ -134,11 +133,29 @@ namespace generative
 
     void Habitat::Update()
     {
+        for ( auto it = _faunaRefMap.begin(); it != _faunaRefMap.end(); ++it ) {
+            it->second->Update();
+        }
+        for ( const std::string & deadFaunaId : _deadFaunaIds ) {
+            auto deadFaunaIt = _faunaRefMap.find( deadFaunaId );
+            if ( deadFaunaIt == _faunaRefMap.end() ) {
+                std::cout << "WARNING: dead fauna with id " << deadFaunaId << " could not be removed" << std::endl;
+                continue;
+            }
+            ci::vec2 deadFaunaLoc = deadFaunaIt->second->Position();
+            _faunaRefMap.erase( deadFaunaId );
+            _faunaLocs[deadFaunaLoc.y][deadFaunaLoc.x];
+        }
+        _deadFaunaIds.clear();
         AdvanceHunt();
     }
 
     void Habitat::Draw() const
     {
+        static bool howManyDrawn = true;
+        if ( howManyDrawn ) {
+            howManyDrawn = false;
+        }
         for ( const std::pair<std::string, std::shared_ptr<Fauna>> & faunaPairRef : _faunaRefMap ) {
             faunaPairRef.second->Draw();
         }
@@ -166,6 +183,10 @@ namespace generative
             std::cout << "fauna at x: " << posX << " y: " << posY << " could not be added" << std::endl;
             return -2;
         }
+        std::cout << "fauna with id: " << fauna->Id() << " has been initialized at " << fauna->Position().x << ": " << fauna->Position().y << std::endl;
+        fauna->SetDeathCB( [&]( const std::string & idOfDead ) {
+            _deadFaunaIds.push_back( idOfDead );
+        });
         _faunaLocs[posY][posX]->SetResident( id );
         _faunaRefMap.insert({ fauna->Id(), fauna });
         return 0;

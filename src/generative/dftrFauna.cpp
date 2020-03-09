@@ -22,13 +22,13 @@ namespace generative
         boost::uuids::basic_random_generator<boost::mt19937> randomGen( &mtGen );
         boost::uuids::uuid bId = randomGen();
         _id = boost::uuids::to_string( bId );
-        std::cout << "fauna with id: " << _id << " has been initialized at " << _position.x << ": " << _position.y << std::endl;
         SetRadius( radius );
-        _reach = _radius; //TODO magic number
-        _maxAge = ci::randFloat( 60.0f, 500.0f );
+        _maxAge = ci::randFloat( 20.0f, 35.0f ); //TODO magic numbers
         _color = ci::Colorf( ci::randFloat( 0.0f, 1.0f ),
                 ci::randFloat( 0.0f, 1.0f ),
                 ci::randFloat( 0.0f, 1.0f ));
+        _approachDeath = ci::randFloat( 0.7f, 0.15f ) * _maxAge;
+        DeathCB = nullptr;
     }
 
     /**
@@ -39,9 +39,15 @@ namespace generative
         _view = _radius * 4; //TODO magic number
     }
 
+    /**
+     * this does a lot more than just set the radius
+     * it also sets the reach and the view, TODO revisit this
+     * @param radius: new radius value
+     */
     void Fauna::SetRadius( const float radius )
     {
         _radius = radius;
+        _reach = _radius;
         SetView();
     }
 
@@ -80,6 +86,35 @@ namespace generative
         retVal = BlendColors( _color, other->Color(), 0.6f );
         SetRadius( _radius + ( other->Radius() * 0.5 ));
         return retVal;
+    }
+
+    /**
+     * age the fauna and modulate whatever other params are associated with age
+     * @param stepSize: how much to increment age in each update
+     * @return reserved
+     */
+    int16_t Fauna::IncAge( const float stepSize )
+    {
+        _currentAge += stepSize;
+        if ( _currentAge >= _maxAge ) {
+            if ( DeathCB != nullptr ) {
+                std::cout << "death cb: " << _id << std::endl;
+                DeathCB( _id );
+            }
+            else {
+                std::cout << "WARNING: Death callback for fauna " + _id + " is not set" << std::endl;
+            }
+        }
+        else if ( _currentAge >= _approachDeath ) {
+            float newRadius = _radius - ( _radius / _approachDeath );
+            SetRadius( newRadius );
+        }
+        return 0;
+    }
+
+    void Fauna::Update()
+    {
+        IncAge();
     }
 
     void Fauna::Draw() const

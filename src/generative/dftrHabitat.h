@@ -28,6 +28,7 @@ namespace generative
         int _popVariance;
         std::map<std::string, std::shared_ptr<drifter::generative::Fauna>> _faunaRefMap;
         std::vector<std::vector<std::shared_ptr<drifter::generative::HabitatTile>>> _faunaLocs;
+        std::vector<std::string> _deadFaunaIds;
 
         int16_t TryAddFauna( std::shared_ptr<drifter::generative::Fauna> fauna );
 
