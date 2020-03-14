@@ -15,7 +15,7 @@
 #include "cinder/qtime/QuickTimeGlImplAvf.h"
 #include "cinder/gl/Texture.h"
 #include "boost/filesystem.hpp"
-#include "dftrRandomizer.h"
+#include "utility/dftrRandomizer.h"
 
 namespace drifter
 {

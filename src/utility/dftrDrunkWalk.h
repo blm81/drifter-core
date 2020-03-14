@@ -11,7 +11,7 @@
 
 namespace drifter
 {
-namespace generative
+namespace utility
 {
     template <class T>
     class DrunkWalk
@@ -56,5 +56,5 @@ namespace generative
         T           _maxStep;
         ci::Perlin  _perlin;
     };
-} //generative
+} //utility
 } //drifter
