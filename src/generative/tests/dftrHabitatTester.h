@@ -16,8 +16,10 @@ namespace generative
 {
     class HabitatTester : public Habitat
     {
+        std::vector<std::string> InitHuntingHabitat();
         friend bool tests::PopulateTest();
         friend bool tests::AdvanceHuntTest();
+        friend bool tests::UpdateMassTest();
         friend bool tests::GetNeighborsByLayerTest();
 
     public:

@@ -20,9 +20,121 @@ namespace generative
         _faunaLocs.resize( height );
         _popSize = 15;
         _popVariance = 10;
+        InitMassMap({ "RED", "GREEN", "BLUE" }); //TODO implement better way to track what keys we use
+        InitMassMapFunctors();
         for ( std::vector<std::shared_ptr<drifter::generative::HabitatTile>> & currVector : _faunaLocs ) {
             currVector.resize( width, nullptr );
         }
+    }
+
+    /**
+     * add key if not already there, or reset to initVal
+     * @param keys: keys to init/reset
+     * @param initVal: value to init/reset for all keys
+     */
+    void Habitat::InitMassMap( const std::vector<std::string> & keys, const float initVal )
+    {
+        _totalMass = 0;
+        for ( const std::string key : keys ) {
+            auto it = _massMap.find( key );
+            if ( it == _massMap.end() ) {
+                _massMap.insert({ key, { key, initVal, 0.0f, [initVal]( std::shared_ptr<Fauna> fauna )-> float {
+                    std::cout << "WARNING: mass update function is not set for " << fauna->Id() << ". Returning default " << initVal << std::endl;
+                    return initVal;
+                }}});
+            }
+            else {
+                it->second.mass = initVal;
+                it->second.proportionOfTotal = 0;
+            }
+        }
+    }
+
+    /**
+     * match keys to std::function that increases the mass value
+     * @return -1: one or more functors could not be found
+     */
+    int16_t Habitat::InitMassMapFunctors()
+    {
+        int16_t retVal = 0;
+        std::function<float( const float, std::shared_ptr<Fauna>)> colorProportionFunc = [this]( const float colorVal,  std::shared_ptr<Fauna> fauna ) ->float
+        {
+            float proportion = colorVal / fauna->TotalColorIntensity();
+            float massProport = proportion * fauna->Area();
+            this->_totalMass += massProport;
+            return massProport;
+        };
+        for ( auto it = _massMap.begin(); it != _massMap.end(); ++it ) {
+            if ( it->first == "RED" ) {
+                it->second.incFunc = [colorProportionFunc]( std::shared_ptr<Fauna> fauna )->float {
+                    return colorProportionFunc( fauna->Color().r, fauna );
+                };
+            }
+            else if ( it->first == "GREEN" ) {
+                it->second.incFunc = [colorProportionFunc]( std::shared_ptr<Fauna> fauna )->float {
+                    return colorProportionFunc( fauna->Color().g, fauna );
+                };
+            }
+            else if ( it->first == "BLUE" ) {
+                it->second.incFunc = [colorProportionFunc]( std::shared_ptr<Fauna> fauna )->float {
+                    return colorProportionFunc( fauna->Color().b, fauna );
+                };
+            }
+            else {
+                std::cout << "WARNING: the key " << it->first << "does not have an increment functor" << std::endl;
+                retVal = -1;
+            }
+        }
+        return retVal;
+    }
+
+    /**
+     * update the mass of the corresponding key
+     * @param key: key to update
+     * @param fauna:
+     * @return -1: key not found
+     */
+    int16_t Habitat::UpdateMassEntry( const std::string & key, std::shared_ptr<Fauna> fauna )
+    {
+        auto it = _massMap.find( key );
+        if ( it == _massMap.end() ) {
+            std::cout << "WARNING: the entry for " << key << " could not be updated" << std::endl;
+            return -1;
+        }
+        else {
+            it->second.mass += it->second.incFunc( fauna );
+            return 0;
+        }
+    }
+
+    /**
+     * update proportions for total mass
+     * @return TODO only a placeholder now
+     */
+    int16_t Habitat::UpdateMassTotals()
+    {
+        float totalMass = 0;
+        for ( auto it = _massMap.begin(); it != _massMap.end(); ++it ) {
+            totalMass += it->second.mass;
+        }
+        for ( auto it = _massMap.begin(); it != _massMap.end(); ++it ) {
+            it->second.proportionOfTotal = it->second.mass / _totalMass;
+        }
+    }
+
+    /**
+     * updates the mass entries, then totals
+     */
+    void Habitat::UpdateMass()
+    {
+        InitMassMap({ "RED", "GREEN", "BLUE" }); //TODO implement better way to track what keys we use
+        for ( auto it = _faunaRefMap.begin(); it != _faunaRefMap.end(); ++it ) {
+            it->second->Update();
+            UpdateMassEntry( "RED", it->second );
+            UpdateMassEntry( "GREEN", it->second );
+            UpdateMassEntry( "BLUE", it->second );
+        }
+        UpdateMassTotals();
     }
 
     /**
@@ -133,9 +245,8 @@ namespace generative
 
     void Habitat::Update()
     {
-        for ( auto it = _faunaRefMap.begin(); it != _faunaRefMap.end(); ++it ) {
-            it->second->Update();
-        }
+        AdvanceHunt();
+        UpdateMass();
         for ( const std::string & deadFaunaId : _deadFaunaIds ) {
             auto deadFaunaIt = _faunaRefMap.find( deadFaunaId );
             if ( deadFaunaIt == _faunaRefMap.end() ) {
@@ -147,7 +258,6 @@ namespace generative
             _faunaLocs[deadFaunaLoc.y][deadFaunaLoc.x];
         }
         _deadFaunaIds.clear();
-        AdvanceHunt();
     }
 
     void Habitat::Draw() const

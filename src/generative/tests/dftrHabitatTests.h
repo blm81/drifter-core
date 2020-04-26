@@ -12,5 +12,6 @@ namespace tests
 {
     bool PopulateTest();
     bool AdvanceHuntTest();
+    bool UpdateMassTest();
 } //tests
 } //drifter

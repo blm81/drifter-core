@@ -41,6 +41,9 @@ void DrifterTests::update()
     if ( !AdvanceHuntTest() ) {
         std::cout << "AdvanceHunt failed" << std::endl;
     }
+    if ( !UpdateMassTest() ) {
+        std::cout << "UpdateMass failed" << std::endl;
+    }
     _testsRun = true;
 }
 

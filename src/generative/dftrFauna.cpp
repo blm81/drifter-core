@@ -24,11 +24,24 @@ namespace generative
         _id = boost::uuids::to_string( bId );
         SetRadius( radius );
         _maxAge = ci::randFloat( 20.0f, 35.0f ); //TODO magic numbers
-        _color = ci::Colorf( ci::randFloat( 0.0f, 1.0f ),
+        SetColor(ci::Colorf( ci::randFloat( 0.0f, 1.0f ),
                 ci::randFloat( 0.0f, 1.0f ),
-                ci::randFloat( 0.0f, 1.0f ));
+                ci::randFloat( 0.0f, 1.0f )));
         _approachDeath = ci::randFloat( 0.7f, 0.15f ) * _maxAge;
         DeathCB = nullptr;
+    }
+
+    /**
+     * replace the values of _color with dstColor
+     * also: compute the total color intensity
+     * @param dstColor: set _color to this
+     */
+    void Fauna::SetColor( const ci::Colorf & dstColor )
+    {
+        _color.r = dstColor.r;
+        _color.g = dstColor.g;
+        _color.b = dstColor.b;
+        _totalColorIntensity = _color.r + _color.g + _color.b;
     }
 
     /**
@@ -48,6 +61,7 @@ namespace generative
     {
         _radius = radius;
         _reach = _radius;
+        _area = 2 * M_PI * radius;
         SetView();
     }
 
@@ -57,6 +71,7 @@ namespace generative
      * @param srcColor: color to blend into dstColor
      * @param srcWeight: how much to weigh srcColor in blending
      * @return -1: invalid weight
+     * TODO maybe this should return a color and take an int16_t ref for error code?
      */
     int16_t Fauna::BlendColors( ci::Colorf & dstColor, const ci::Colorf & srcColor, const float srcWeight )
     {
@@ -83,7 +98,9 @@ namespace generative
     int16_t Fauna::Eat( std::shared_ptr<Fauna> other )
     {
         int retVal;
-        retVal = BlendColors( _color, other->Color(), 0.6f );
+        ci::Colorf blendColor = _color;
+        retVal = BlendColors( blendColor, other->Color(), 0.6f );
+        SetColor( blendColor );
         SetRadius( _radius + ( other->Radius() * 0.5 ));
         return retVal;
     }
@@ -98,7 +115,6 @@ namespace generative
         _currentAge += stepSize;
         if ( _currentAge >= _maxAge ) {
             if ( DeathCB != nullptr ) {
-                std::cout << "death cb: " << _id << std::endl;
                 DeathCB( _id );
             }
             else {

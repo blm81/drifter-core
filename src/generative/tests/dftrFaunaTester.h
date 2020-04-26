@@ -13,9 +13,14 @@ namespace drifter
 {
 namespace generative
 {
+    class HabitatTester;
     class FaunaTester : public Fauna
     {
+        friend class HabitatTester;
         friend bool tests::AdvanceHuntTest();
+        void SetParentColor( const ci::Colorf & dstColor ) { SetColor( dstColor );}
+        void SetParentRadius( const float radius ) { SetRadius( radius );}
+        float & MaxAge() { return _maxAge; }
 
     public:
         FaunaTester( const ci::vec2 & position, float radius = 5 )
